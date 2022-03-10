@@ -78,7 +78,7 @@ public class Encryptor
      */
     public String encryptMessage(String message)
     {
-        int max = numRows + numCols;
+        int maxBoxes = numRows * numCols;
         String encryption = "";
         int l = 0;
         if (message.length())
