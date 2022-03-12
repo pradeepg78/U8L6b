@@ -80,8 +80,30 @@ public class Encryptor
     {
         int maxBoxes = numRows * numCols;
         String encryption = "";
-        int l = 0;
-        if (message.length())
+        int firstIndex = 0;
+        int length = 0;
+
+        //no empty boxes, aka all boxes can be filled
+        if(message.length() % maxBoxes == 0) length = message.length() /maxBoxes;
+
+        //add the "+ 1"
+        else length = message.length() / maxBoxes +1;
+
+        for (int i = 0; i < length; i++)
+        {
+            if(firstIndex + maxBoxes < message.length())
+            {
+                fillBlock(message.substring(firstIndex, firstIndex + maxBoxes));
+                encryption += encryptBlock();
+                firstIndex = firstIndex + maxBoxes;
+            }
+            else
+            {
+                fillBlock(message.substring(firstIndex));
+                encryption += encryptBlock();
+            }
+        }
+        return encryption;
     }
 
     /**  Decrypts an encrypted message. All filler 'A's that may have been
@@ -108,8 +130,50 @@ public class Encryptor
      */
     public String decryptMessage(String encryptedMessage)
     {
-        /* to be implemented in part (d) */
-        return "complete this";
+        int maxBoxes = numRows * numCols;
+        int length = encryptedMessage.length() / maxBoxes;
+        String decryption = "";
+        String str = "";
+        int index = 0;
+
+        rearrange(encryptedMessage);
+        for (int i = 0; i < length; i++)
+        {
+            str = encryptedMessage.substring(index, index + maxBoxes);
+            index += maxBoxes;
+            rearrange(str);
+            for (int r = 0; r < letterBlock.length; r++)
+            {
+                for (int c  = 0; c < letterBlock[r].length; c++)
+                {
+                    decryption += letterBlock[r][c];
+                }
+            }
+        }
+
+        int cut = decryption.length();
+        for (int i = decryption.length() - 1; i > 0; i--)
+        {
+            if (decryption.substring(i, i + 1).equals("A")) cut--;
+            else break;
+            decryption = decryption.substring(0, cut);
+        }
+        return decryption;
     }
 
+    // helper method to rearrange str in column - major order
+    private void rearrange(String str)
+    {
+        int index = 0;
+        String character = "";
+        for (int c = 0; c < letterBlock[0].length; c++) {
+            for (int r = 0; r < letterBlock.length; r++) {
+                if (index + 1 <= str.length()) {
+                    character = str.substring(index, index + 1);
+                    letterBlock[r][c] = character;
+                    index++;
+                }
+            }
+        }
+    }
 }
